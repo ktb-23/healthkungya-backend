@@ -2,47 +2,37 @@ module.exports = {
     UserSignup: {
       type: "object",
       properties: {
-        username: {
+        id: {
           type: "string",
-          example: "sgky0511@naver.com",
+          example: "ktb23@kakao.com",
         },
         password: {
           type: "string",
-          example: "hello1234",
+          example: "ktb1234",
+        },
+        nickname: {
+            type: "string",
+            example: "닉네임",
+          },
+        weight: {
+            type: "float",
+            example: "68",
         },
       },
-      required: ["username", "password"],
+      required: ["id", "password","nickname","weight"],
     },
     UserLogin: {
       type: "object",
       properties: {
-        username: {
+        id: {
           type: "string",
-          example: "sgky0511@naver.com",
+          example: "ktb23@kakao.com",
         },
         password: {
           type: "string",
-          example: "hello1234",
+          example: "ktb1234",
         },
       },
-      required: ["username", "password"],
-    },
-    UserProfile: {
-        type: "object",
-        properties: {
-            id: {
-                type: "integer",
-                example: 1,
-            },
-            username: {
-                type: "string",
-                example: "user1",
-            },
-            email: {
-                type: "string",
-                example: "user1@example.com",
-            },
-        },
-        required: ["id", "username", "email"],
+      required: ["id", "password"],
     },
   };
