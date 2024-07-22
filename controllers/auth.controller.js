@@ -1,5 +1,6 @@
 const authService = require('../services/auth.service');
 
+// 회원가입 컨트롤러
 const register = (req, res) => {
     const { id, password, nickname, weight } = req.body;
 
@@ -15,6 +16,7 @@ const register = (req, res) => {
     });
 };
 
+// 로그인 컨트롤러
 const login = (req, res) => {
     const { id, password } = req.body;
 

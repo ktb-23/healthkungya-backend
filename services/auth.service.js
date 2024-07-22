@@ -1,6 +1,8 @@
 const connection = require('../db');
 const bcrypt = require('bcryptjs');
 const { generateToken, generateRefreshToken } = require('../authorization/jwt');
+
+// 회원가입 서비스
 const register = async (id, password, nickname, weight, result) => {
     const hashedPassword = await bcrypt.hash(password, 8);
 
@@ -19,6 +21,8 @@ const register = async (id, password, nickname, weight, result) => {
     });
 };
 
+
+// 로그인 서비스
 const login = async (id, password, result) => {
     const query = "SELECT * FROM user_tb WHERE id = ?";
     
@@ -29,12 +33,15 @@ const login = async (id, password, result) => {
             return;
         }
 
+        // 유저가 없을 경우
         if (res.length === 0) {
             result({ message: "존재하지 않는 회원" }, null);
             return;
         }
 
         const user = res[0];
+
+        // 해시된 비밀번호 비교
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
