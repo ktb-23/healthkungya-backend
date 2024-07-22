@@ -36,7 +36,7 @@ module.exports = {
 항상 엔드포인트 위에 작성
 
 post
-<code>
+<div>
 /**
  * @swagger
  * /api/v1/post:
@@ -63,7 +63,7 @@ post
  *       401:
  *         description: 인증 권한이 없음
  */
- </code>
+ </div>
 
  get
  <code>
@@ -99,7 +99,7 @@ post
  </code>
  
  put
- <code>
+ <div>
 /**
  * @swagger
  * /api/v1/profile:
@@ -126,7 +126,7 @@ post
  *       401:
  *         description: 인증 권한이 없음
  */
- </code>
+ </div>
  
 delete
 <code>
