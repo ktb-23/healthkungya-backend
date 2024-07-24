@@ -3,10 +3,11 @@ const express=require("express")
 const app=express()
 // 컨트롤러 가져오기
 const authController=require("../controllers/auth.controller")
-const { verifyTokenMiddleware } = require("../authorization/jwt")
 
 //라우터 
 const router=express.Router()
+
+router.get('/check-duplicate', authController.checkDuplicate)
 
 /**
  * @swagger

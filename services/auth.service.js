@@ -4,6 +4,7 @@ const { generateToken, generateRefreshToken } = require('../authorization/jwt');
 
 // 아이디 중복 체크 컨트롤러
 const checkDuplicateId = (id, result) => {
+    console.log(id, result)
     const query = "SELECT * FROM user_tb WHERE id = ?";
 
     connection.query(query, [id], (err, res) => {
