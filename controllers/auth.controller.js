@@ -62,8 +62,7 @@ const register = (req, res) => {
         if (err) {
             return res.status(500).send({ message: "아이디 중복 체크 중 오류 발생" });
         }
-
-        if (idExists) {
+        if (idExists.message=='아이디가 이미 존재합니다.') {
             return res.status(409).send({ message: "아이디가 이미 존재합니다." });
         }
 
@@ -72,7 +71,7 @@ const register = (req, res) => {
                 return res.status(500).send({ message: "닉네임 중복 체크 중 오류 발생" });
             }
 
-            if (nicknameExists) {
+            if (nicknameExists.message=="닉네임이 이미 존재합니다.") {
                 return res.status(409).send({ message: "닉네임이 이미 존재합니다." });
             }
 
