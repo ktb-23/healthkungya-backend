@@ -53,11 +53,9 @@ const register = (req, res) => {
   }
 
   if (!isValidPassword(password)) {
-    return res
-      .status(400)
-      .send({
-        message: "비밀번호는 문자/숫자/기호를 사용하여 8자리 이상이여야합니다.",
-      });
+    return res.status(400).send({
+      message: "비밀번호는 문자/숫자/기호를 사용하여 8자리 이상이여야합니다.",
+    });
   }
 
   if (!isValidNickname(nickname)) {

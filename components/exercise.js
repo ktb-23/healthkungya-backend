@@ -34,18 +34,35 @@ module.exports = {
     },
     required: ["date", "exercises", "kcal_delete"],
   },
-  //   UserLogin: {
-  //     type: "object",
-  //     properties: {
-  //       id: {
-  //         type: "string",
-  //         example: "ktb23@kakao.com",
-  //       },
-  //       password: {
-  //         type: "string",
-  //         example: "ktb1234",
-  //       },
-  //     },
-  //     required: ["id", "password"],
-  //   },
+  UpdateExercise: {
+    type: "object",
+    properties: {
+      exercises: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            ex: {
+              type: "string",
+              example: "달리기",
+            },
+            extime: {
+              type: "number",
+              example: 30,
+            },
+          },
+        },
+        example: [
+          { ex: "달리기", extime: 30 },
+          { ex: "벤치프레스", extime: 45 },
+          { ex: "조깅", extime: 20 },
+        ],
+      },
+      kcal_delete: {
+        type: "number",
+        example: 1500,
+      },
+    },
+    required: ["exercises", "kcal_delete"],
+  },
 };

@@ -68,7 +68,26 @@ const SaveExerciseLog = async (user_id, body, result) => {
   }
 };
 
-const UpdateExerciseLog = async (log_id, user_id, body) => {
+const GetExerciseLog = async (date_id, user_id, result) => {
+  const getQuery = "SELECT * FROM exlog_tb WHERE date_id = ? AND user_id = ?";
+
+  try {
+    const log = await new Promise((resolve, reject) => {
+      connection.query(getQuery, [date_id, user_id], (err, res) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(res);
+      });
+    });
+    result(log);
+  } catch (error) {
+    console.error("운동 기록 조회 중 오류 발생:", error);
+    result(error, null);
+  }
+};
+
+const UpdateExerciseLog = async (log_id, user_id, body, result) => {
   const updateQuery =
     "UPDATE exlog_tb SET ex = ?, extime = ?, kcal_delete = ? WHERE log_id = ? AND user_id = ?";
   // 운동명과 시간을 쉼표로 구분된 문자열로 만들기
@@ -84,7 +103,7 @@ const UpdateExerciseLog = async (log_id, user_id, body) => {
     await new Promise((resolve, reject) => {
       connection.query(
         updateQuery,
-        [exercisesString, extimesString, body.kcal_delete, user_id, log_id],
+        [exercisesString, extimesString, body.kcal_delete, log_id, user_id],
         (err, res) => {
           if (err) {
             return reject(err);
@@ -102,4 +121,4 @@ const UpdateExerciseLog = async (log_id, user_id, body) => {
   }
 };
 
-module.exports = { SaveExerciseLog, UpdateExerciseLog };
+module.exports = { SaveExerciseLog, UpdateExerciseLog, GetExerciseLog };
