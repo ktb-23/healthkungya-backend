@@ -1,6 +1,5 @@
 //라이브러리 가져오기
 const express = require("express");
-const app = express();
 // 컨트롤러 가져오기
 const authController = require("../controllers/auth.controller");
 

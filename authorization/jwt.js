@@ -48,7 +48,7 @@ function verifyTokenMiddleware(req, res, next) {
     return res.status(401).json({ message: "인증 권한이 없음" });
   }
 
-  req.decoded = decoded;
+  req.user = decoded;
   next();
 }
 module.exports = {

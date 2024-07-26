@@ -5,6 +5,7 @@ const cors = require("cors");
 const app = express();
 const { swaggerUi, specs } = require("./module/swagger");
 const authRouter = require("./router/auth.router");
+const exerciseRouter = require("./router/exercise.router");
 app.use(express.json());
 app.use(cors());
 // 포트번호
@@ -14,6 +15,7 @@ app.set("port", process.env.PORT || 8000);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use("/api/auth", authRouter);
+app.use("/api/exercise_log", exerciseRouter);
 
 // 서버 실행
 app.listen(app.get("port"), () => {

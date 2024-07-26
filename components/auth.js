@@ -4,11 +4,11 @@ module.exports = {
     properties: {
       id: {
         type: "string",
-        example: "ktb23@kakao.com",
+        example: "ktb23",
       },
       password: {
         type: "string",
-        example: "ktb1234",
+        example: "!ktb1234",
       },
       nickname: {
         type: "string",
@@ -26,11 +26,11 @@ module.exports = {
     properties: {
       id: {
         type: "string",
-        example: "ktb23@kakao.com",
+        example: "ktb23",
       },
       password: {
         type: "string",
-        example: "ktb1234",
+        example: "!ktb1234",
       },
     },
     required: ["id", "password"],
