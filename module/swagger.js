@@ -1,38 +1,38 @@
-const swaggerUi = require('swagger-ui-express');
-const swaggereJsdoc = require('swagger-jsdoc');
-const userSchemas = require("../components/auth")
+const swaggerUi = require("swagger-ui-express");
+const swaggereJsdoc = require("swagger-jsdoc");
+const userSchemas = require("../components/auth");
 const options = {
-    definition: {
-      openapi: "3.0.0",
-      info: {
-        title: "healthkungya API",
-        version: "1.0.0",
-        description: "healthkungya API with express",
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "healthkungya API",
+      version: "1.0.0",
+      description: "healthkungya API with express",
+    },
+    servers: [
+      {
+        url: "http://localhost:8000",
       },
-      servers: [
-        {
-          url: "http://localhost:8000",
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
         },
-      ],
-      components: {
-        securitySchemes: {
-            bearerAuth: {
-                type: 'http',
-                scheme: 'bearer',
-                bearerFormat: 'JWT',
-            },
-        },
-        schemas: {
-          ...userSchemas,
-        },
+      },
+      schemas: {
+        ...userSchemas,
       },
     },
-    apis: ["./router/*.js"],
-  };
+  },
+  apis: ["./router/*.js"],
+};
 
 const specs = swaggereJsdoc(options);
 
 module.exports = {
-    swaggerUi,
-    specs
+  swaggerUi,
+  specs,
 };
