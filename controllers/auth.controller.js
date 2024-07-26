@@ -13,6 +13,7 @@ const isValidPassword = (password) => {
 };
 
 const isValidNickname = (nickname) => {
+    // 1-8자리
     return nickname.length <= 8;
 };
 
