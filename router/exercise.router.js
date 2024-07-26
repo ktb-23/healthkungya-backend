@@ -34,6 +34,6 @@ const router = express.Router();
 router.post(
   "/",
   verifyTokenMiddleware,
-  exerciseController.SaveExerciseController
+  exerciseController.SaveExerciseLogController
 );
 module.exports = router;

@@ -1,7 +1,7 @@
 const connection = require("../db");
 
 // 운동 기록 작성 서비스
-const saveExerciseLog = async (user_id, body, result) => {
+const SaveExerciseLog = async (user_id, body, result) => {
   const checkQuery =
     "SELECT date_id FROM date_tb WHERE user_id = ? AND dateValue = ?";
   const insertDateQuery =
@@ -68,4 +68,38 @@ const saveExerciseLog = async (user_id, body, result) => {
   }
 };
 
-module.exports = { saveExerciseLog };
+const UpdateExerciseLog = async (log_id, user_id, body) => {
+  const updateQuery =
+    "UPDATE exlog_tb SET ex = ?, extime = ?, kcal_delete = ? WHERE log_id = ? AND user_id = ?";
+  // 운동명과 시간을 쉼표로 구분된 문자열로 만들기
+  const exercisesString = body.exercises
+    .map((exercise) => exercise.ex)
+    .join(", ");
+  const extimesString = body.exercises
+    .map((exercise) => exercise.extime)
+    .join(", ");
+  // exlog_tb에 운동 기록 업데이트
+
+  try {
+    await new Promise((resolve, reject) => {
+      connection.query(
+        updateQuery,
+        [exercisesString, extimesString, body.kcal_delete, user_id, log_id],
+        (err, res) => {
+          if (err) {
+            return reject(err);
+          }
+          return resolve();
+        }
+      );
+    });
+    // 성공
+    result(null, "운동 기록이 성공적으로 업데이트되었습니다.");
+  } catch (err) {
+    // 에러 처리
+    console.error("운동 기록 업데이트 중 오류 발생:", err);
+    result(err, null);
+  }
+};
+
+module.exports = { SaveExerciseLog, UpdateExerciseLog };
