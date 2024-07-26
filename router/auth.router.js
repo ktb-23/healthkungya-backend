@@ -1,13 +1,13 @@
 //라이브러리 가져오기
-const express=require("express")
-const app=express()
+const express = require("express");
+const app = express();
 // 컨트롤러 가져오기
-const authController=require("../controllers/auth.controller")
+const authController = require("../controllers/auth.controller");
 
-//라우터 
-const router=express.Router()
+//라우터
+const router = express.Router();
 
-router.get('/check-duplicate', authController.checkDuplicate)
+router.get("/check-duplicate", authController.checkDuplicate);
 
 /**
  * @swagger
@@ -29,7 +29,7 @@ router.get('/check-duplicate', authController.checkDuplicate)
  *       400:
  *         description: 잘못된 요청
  */
-router.post("/register",authController.register)
+router.post("/register", authController.register);
 
 /**
  * @swagger
@@ -51,7 +51,7 @@ router.post("/register",authController.register)
  *       401:
  *         description: 인증 권한 없음
  */
-router.post("/login",authController.login)
+router.post("/login", authController.login);
 
 /**
  * @swagger
@@ -99,5 +99,4 @@ router.post("/login",authController.login)
 //  */
 // router.post("/refresh",authController.refresh)
 
-
-module.exports=router
+module.exports = router;
