@@ -80,7 +80,7 @@ const GetExerciseLog = async (date_id, user_id, result) => {
         return resolve(res);
       });
     });
-    result(log);
+    result(null, log);
   } catch (error) {
     console.error("운동 기록 조회 중 오류 발생:", error);
     result(error, null);

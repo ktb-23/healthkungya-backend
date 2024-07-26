@@ -65,18 +65,14 @@ const GetExerciseLogController = async (req, res) => {
   const userId = req.user.user_id;
   try {
     // 운동 기록 조회 서비스 호출
-    await exerciseService.GetExerciseLog(
-      parseInt(date_id),
-      userId,
-      (err, message) => {
-        if (err) {
-          return res
-            .status(500)
-            .json({ message: "운동 기록 조회 중 오류 발생", error: err });
-        }
-        return res.status(200).json({ message: message });
+    await exerciseService.GetExerciseLog(date_id, userId, (err, data) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "운동 기록 조회 중 오류 발생", error: err });
       }
-    );
+      return res.status(200).json(data);
+    });
   } catch (error) {
     console.error("운동 기록 조회 중 오류 발생:", error);
     return res.status(500).json({ message: "서버 내부 오류" });

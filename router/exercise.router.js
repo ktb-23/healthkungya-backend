@@ -94,27 +94,13 @@ router.put(
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   log_id:
- *                     type: integer
- *                   user_id:
- *                     type: integer
- *                   date_id:
- *                     type: integer
- *                   ex:
- *                     type: string
- *                   extime:
- *                     type: string
- *                   kcal_delete:
- *                     type: integer
+ *              $ref: '#/components/schemas/GetExercise'
  *       401:
  *         description: 인증되지 않았습니다.
  *       500:
  *         description: 서버 내부 오류
  */
+
 router.get(
   "/:date_id",
   verifyTokenMiddleware,
