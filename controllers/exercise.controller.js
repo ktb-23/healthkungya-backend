@@ -55,6 +55,7 @@ const UpdateExerciseLogController = async (req, res) => {
   }
 };
 
+// 운동 기록 조회
 const GetExerciseLogController = async (req, res) => {
   // 사용자가 로그인하지 않은 경우 처리
   if (!req.user) {
@@ -79,8 +80,30 @@ const GetExerciseLogController = async (req, res) => {
   }
 };
 
+const GetSearchExerciseController = async (req, res) => {
+  const ex = req.query.type;
+  if (!ex) {
+    return res.status(400).json({ error: "운동 종목을 입력하세요" });
+  }
+
+  try {
+    await exerciseService.SearchExercise(ex, (err, data) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "운동 조회 중 오류 발생", error: err });
+      }
+      return res.status(200).json(data);
+    });
+  } catch (error) {
+    console.error("운동 조회 중 오류 발생:", error);
+    return res.status(500).json({ message: "서버 내부 오류" });
+  }
+};
+
 module.exports = {
   SaveExerciseLogController,
   UpdateExerciseLogController,
   GetExerciseLogController,
+  GetSearchExerciseController,
 };

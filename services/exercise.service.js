@@ -67,7 +67,7 @@ const SaveExerciseLog = async (user_id, body, result) => {
     result(err, null);
   }
 };
-
+// 운동 기록 조회
 const GetExerciseLog = async (date_id, user_id, result) => {
   const getQuery = "SELECT * FROM exlog_tb WHERE date_id = ? AND user_id = ?";
 
@@ -87,6 +87,7 @@ const GetExerciseLog = async (date_id, user_id, result) => {
   }
 };
 
+// 운동 기록 업데이트
 const UpdateExerciseLog = async (log_id, user_id, body, result) => {
   const updateQuery =
     "UPDATE exlog_tb SET ex = ?, extime = ?, kcal_delete = ? WHERE log_id = ? AND user_id = ?";
@@ -121,4 +122,28 @@ const UpdateExerciseLog = async (log_id, user_id, body, result) => {
   }
 };
 
-module.exports = { SaveExerciseLog, UpdateExerciseLog, GetExerciseLog };
+// 운동 검색
+const SearchExercise = async (ex, result) => {
+  console.log(ex);
+  const searchQuery = "SELECT exitem_id, ex, met FROM ex_tb WHERE ex LIKE ?";
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      connection.query(searchQuery, [`%${ex}%`], (err, res) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(res);
+      });
+    });
+    result(null, rows);
+  } catch (err) {
+    result(error, null);
+  }
+};
+
+module.exports = {
+  SaveExerciseLog,
+  UpdateExerciseLog,
+  GetExerciseLog,
+  SearchExercise,
+};

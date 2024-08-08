@@ -92,4 +92,49 @@ module.exports = {
     },
     required: ["log_id", "user_id", "date_id", "ex", "extime", "kcal_delete"],
   },
+  GetExercise: {
+    type: "array",
+    items: {
+      type: "object",
+      properties: {
+        log_id: {
+          type: "integer",
+        },
+        user_id: {
+          type: "integer",
+        },
+        date_id: {
+          type: "integer",
+        },
+        ex: {
+          type: "string",
+        },
+        extime: {
+          type: "string",
+        },
+        kcal_delete: {
+          type: "integer",
+        },
+      },
+    },
+    required: ["log_id", "user_id", "date_id", "ex", "extime", "kcal_delete"],
+  },
+  SearchExercise: {
+    type: "object",
+    properties: {
+      exitem_id: {
+        type: "integer",
+        example: 1,
+      },
+      ex: {
+        type: "string",
+        example: "바벨스쿼트",
+      },
+      met: {
+        type: "float",
+        example: 6,
+      },
+    },
+    required: ["exitem_id", "ex", "met"],
+  },
 };
