@@ -101,9 +101,41 @@ const GetSearchExerciseController = async (req, res) => {
   }
 };
 
+const DeleteExerciseLogController = async (req, res) => {
+  // 사용자가 로그인하지 않은 경우 처리
+  if (!req.user) {
+    res.status(401).json({ message: "인증 권한 없음" });
+    return;
+  }
+
+  const { log_id, date_id } = req.params;
+  const userId = req.user.user_id;
+
+  try {
+    // 운동 기록 삭제 서비스 호출
+    await exerciseService.deleteExerciseLog(
+      parseInt(log_id),
+      parseInt(date_id),
+      userId,
+      (err, message) => {
+        if (err) {
+          return res
+            .status(500)
+            .json({ message: "운동 기록 삭제 중 오류 발생", error: err });
+        }
+        return res.status(200).json({ message: message });
+      }
+    );
+  } catch (error) {
+    console.error("운동 기록 삭제 중 오류 발생:", error);
+    return res.status(500).json({ message: "서버 내부 오류" });
+  }
+};
+
 module.exports = {
   SaveExerciseLogController,
   UpdateExerciseLogController,
   GetExerciseLogController,
   GetSearchExerciseController,
+  DeleteExerciseLogController,
 };

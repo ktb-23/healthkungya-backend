@@ -7,7 +7,7 @@ const SaveExerciseLog = async (user_id, body, result) => {
   const insertDateQuery =
     "INSERT INTO date_tb (user_id, dateValue) VALUES (?, ?)";
   const insertExLogQuery =
-    "INSERT INTO exlog_tb (date_id, user_id, ex, extime, kcal_delete) VALUES (?, ?, ?, ?, ?)";
+    "INSERT INTO exlog_tb (date_id, user_id, exitem_id, ex, extime, met) VALUES (?, ?, ?, ?,?,?)";
 
   try {
     // 기록이 이미 존재하는지 확인
@@ -39,17 +39,28 @@ const SaveExerciseLog = async (user_id, body, result) => {
     });
 
     // 운동명과 시간을 쉼표로 구분된 문자열로 만들기
+    const exitem_idString = body.exercises
+      .map((exercise) => exercise.exitem_id)
+      .join(", ");
     const exercisesString = body.exercises
       .map((exercise) => exercise.ex)
       .join(", ");
     const extimesString = body.exercises
       .map((exercise) => exercise.extime)
       .join(", ");
+    const metString = body.exercises.map((exercise) => exercise.met).join(", ");
     // exlog_tb에 운동 기록 추가
     await new Promise((resolve, reject) => {
       connection.query(
         insertExLogQuery,
-        [newDateId, user_id, exercisesString, extimesString, body.kcal_delete],
+        [
+          newDateId,
+          user_id,
+          exitem_idString,
+          exercisesString,
+          extimesString,
+          metString,
+        ],
         (err, res) => {
           if (err) {
             return reject(err);
@@ -90,21 +101,32 @@ const GetExerciseLog = async (date_id, user_id, result) => {
 // 운동 기록 업데이트
 const UpdateExerciseLog = async (log_id, user_id, body, result) => {
   const updateQuery =
-    "UPDATE exlog_tb SET ex = ?, extime = ?, kcal_delete = ? WHERE log_id = ? AND user_id = ?";
+    "UPDATE exlog_tb SET exitem_id=?, ex = ?, extime = ?, met= ? WHERE log_id = ? AND user_id = ?";
   // 운동명과 시간을 쉼표로 구분된 문자열로 만들기
+  const exitem_idString = body.exercises
+    .map((exercise) => exercise.exitem_id)
+    .join(", ");
   const exercisesString = body.exercises
     .map((exercise) => exercise.ex)
     .join(", ");
   const extimesString = body.exercises
     .map((exercise) => exercise.extime)
     .join(", ");
+  const metString = body.exercises.map((exercise) => exercise.met).join(", ");
   // exlog_tb에 운동 기록 업데이트
 
   try {
     await new Promise((resolve, reject) => {
       connection.query(
         updateQuery,
-        [exercisesString, extimesString, body.kcal_delete, log_id, user_id],
+        [
+          exitem_idString,
+          exercisesString,
+          extimesString,
+          metString,
+          log_id,
+          user_id,
+        ],
         (err, res) => {
           if (err) {
             return reject(err);
@@ -140,10 +162,60 @@ const SearchExercise = async (ex, result) => {
     result(error, null);
   }
 };
+const deleteExerciseLog = async (log_id, date_id, user_id, result) => {
+  const deleteExLogQuery =
+    "DELETE FROM exlog_tb WHERE log_id = ? AND user_id = ?";
+  const checkRemainingLogsQuery =
+    "SELECT COUNT(*) as count FROM exlog_tb WHERE date_id = ?";
+  const deleteDateQuery =
+    "DELETE FROM date_tb WHERE date_id = ? AND user_id = ?";
+
+  try {
+    // 1. 운동 기록 삭제
+    await new Promise((resolve, reject) => {
+      connection.query(deleteExLogQuery, [log_id, user_id], (err, res) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve();
+      });
+    });
+
+    // 2. 해당 날짜에 다른 운동 기록이 남아있는지 확인
+    const remainingLogs = await new Promise((resolve, reject) => {
+      connection.query(checkRemainingLogsQuery, [date_id], (err, res) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(res[0].count);
+      });
+    });
+
+    // 3. 다른 운동 기록이 없으면 date_tb에서 날짜 삭제
+    if (remainingLogs === 0) {
+      await new Promise((resolve, reject) => {
+        connection.query(deleteDateQuery, [date_id, user_id], (err, res) => {
+          if (err) {
+            return reject(err);
+          }
+          return resolve();
+        });
+      });
+    }
+
+    // 성공
+    result(null, "운동 기록이 성공적으로 삭제되었습니다.");
+  } catch (err) {
+    // 에러 처리
+    console.error("운동 기록 삭제 중 오류 발생:", err);
+    result(err, null);
+  }
+};
 
 module.exports = {
   SaveExerciseLog,
   UpdateExerciseLog,
   GetExerciseLog,
   SearchExercise,
+  deleteExerciseLog,
 };

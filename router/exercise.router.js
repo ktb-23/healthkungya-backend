@@ -38,7 +38,7 @@ router.post(
 );
 /**
  * @swagger
- * /api/exercise_log/{log_id}:
+ * /api/exercise_log:
  *   put:
  *     summary: 운동 기록 수정
  *     description: 운동 수정을 합니다.
@@ -46,19 +46,21 @@ router.post(
  *       - Exercise
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: log_id
- *         required: true
- *         schema:
- *           type: number
- *         description: 수정할 운동 기록의 ID
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UpdateExercise'
+ *             type: object
+ *             properties:
+ *               log_ids:
+ *                 type: array
+ *                 items:
+ *                   type: number
+ *               exercises:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/UpdateExercise'
  *     responses:
  *       200:
  *         description: 운동 기록 수정 성공
@@ -67,6 +69,7 @@ router.post(
  *       500:
  *         description: 서버 내부 오류
  */
+
 router.put(
   "/:log_id",
   verifyTokenMiddleware,
@@ -107,4 +110,40 @@ router.get(
   exerciseController.GetExerciseLogController
 );
 
+/**
+ * @swagger
+ * /api/exercise_log/{log_id}/{date_id}:
+ *   delete:
+ *     summary: 운동 기록 삭제
+ *     description: 특정 운동 기록을 삭제합니다.
+ *     tags: [Exercise]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: log_id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 로그 ID
+ *       - name: date_id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 날짜 ID
+ *     responses:
+ *       200:
+ *         description: 운동 기록이 성공적으로 삭제되었습니다.
+ *       401:
+ *         description: 인증되지 않았습니다.
+ *       500:
+ *         description: 서버 내부 오류
+ */
+
+router.delete(
+  "/:log_id/:date_id",
+  verifyTokenMiddleware,
+  exerciseController.DeleteExerciseLogController
+);
 module.exports = router;
