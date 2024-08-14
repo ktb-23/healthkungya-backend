@@ -97,6 +97,7 @@ const login = async (id, password, result) => {
 
     result(null, {
       nickname: user.nickname,
+      weight: user.weight,
       accesstoken: accesstoken,
       refreshtoken: refreshtoken,
     });

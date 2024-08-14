@@ -37,7 +37,11 @@ function verifyRefreshToken(token) {
 }
 
 function verifyTokenMiddleware(req, res, next) {
-  const token = req.headers.authorization.split("Bearer ")[1]; // header에서 access token을 가져옵니다.
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(403).json({ message: "Authorization header is missing" });
+  }
+  const token = authHeader.split("Bearer ")[1]; // header에서 access token을 가져옵니다.
   if (!token) {
     return res.status(403).json({ message: "토큰이 없습니다." });
   }
@@ -48,7 +52,7 @@ function verifyTokenMiddleware(req, res, next) {
     return res.status(401).json({ message: "인증 권한이 없음" });
   }
 
-  req.decoded = decoded;
+  req.user = decoded;
   next();
 }
 module.exports = {
