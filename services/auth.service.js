@@ -53,15 +53,35 @@ const register = async (id, password, nickname, weight, result) => {
   const query =
     "INSERT INTO user_tb (id, password, nickname, weight) VALUES (?,?,?,?)";
 
-  connection.query(query, newUser, (err, res) => {
+  connection.query(query, newUser, async (err, res) => {
     if (err) {
       console.error("유저 테이블에 데이터 추가 에러", err);
       result(err, null);
       return;
     }
-
-    console.log("created user: ", { id: res.insertId, ...newUser });
-    result(null, { message: "회원가입 성공했습니다", id: res.insertId });
+    // 프로필 생성 및 예외 처리
+    try {
+      await profile(res.insertId);
+      console.log("created user: ", { id: res.insertId, ...newUser });
+      result(null, { message: "회원가입 성공했습니다", id: res.insertId });
+    } catch (profileErr) {
+      console.error("프로필 생성 중 에러 발생", profileErr);
+      result(profileErr, null);
+    }
+  });
+};
+const profile = async (userId) => {
+  return new Promise((resolve, reject) => {
+    const query = "INSERT INTO profile_tb (user_id) VALUES (?)";
+    connection.query(query, [userId], (err, res) => {
+      if (err) {
+        console.error("프로필 테이블에 데이터 추가 에러", err);
+        reject(err);
+      } else {
+        console.log("프로필 저장");
+        resolve(res);
+      }
+    });
   });
 };
 
