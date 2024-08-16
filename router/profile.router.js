@@ -9,6 +9,30 @@ const router = express.Router();
 /**
  * @swagger
  * /api/profile:
+ *   get:
+ *     summary: 프로필 조회
+ *     description: 유저 프로필을 조회합니다.
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 유저 프로필을 성공적으로 조회되었습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *              $ref: '#/components/schemas/GetProfile'
+ *       401:
+ *         description: 인증되지 않았습니다.
+ *       500:
+ *         description: 서버 내부 오류
+ */
+
+router.get("/", verifyTokenMiddleware, profileController.GetProfileController);
+
+/**
+ * @swagger
+ * /api/profile:
  *   put:
  *     summary: 프로필 수정
  *     description: 프로필 수정을 합니다.
