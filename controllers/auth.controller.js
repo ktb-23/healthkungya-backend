@@ -1,3 +1,4 @@
+const { verifyRefreshToken, generateToken } = require("../authorization/jwt");
 const authService = require("../services/auth.service");
 
 // 유효성 검사 함수
@@ -132,4 +133,23 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { register, login, checkDuplicate, deleteUser };
+const refreshToken = async (req, res) => {
+  const { refreshToken, userId } = req.body;
+  if (!refreshToken) {
+    return res.status(403).json({ message: "리프레쉬 토큰이 없습니다." });
+  }
+  if (!refreshToken.includes(refreshToken)) {
+    return res
+      .status(403)
+      .json({ message: "유효하지 않은 리프레쉬 토큰 입니다." });
+  }
+  const decoded = verifyRefreshToken(refreshToken);
+  if (decoded) {
+    const accesstoken = generateToken({ user_id: userId });
+    return res.json({ accesstoken: accesstoken });
+  } else {
+    return res.status(403).json("리프레쉬 토큰 검증 실패");
+  }
+};
+
+module.exports = { register, login, checkDuplicate, deleteUser, refreshToken };

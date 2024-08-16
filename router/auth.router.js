@@ -93,30 +93,34 @@ router.delete("/delete", verifyTokenMiddleware, authController.deleteUser);
 //  */
 // router.get("/protected",verifyTokenMiddleware,authController.test)
 
-// /**
-//  * @swagger
-//  * /api/auth/refresh:
-//  *   post:
-//  *     summary: 새 토큰 갱신
-//  *     description: 리프레시 토큰을 통해 새로운 액세스 토큰을 발급
-//  *     tags:
-//  *       - Auth
-//  *     requestBody:
-//  *       required: true
-//  *       content:
-//  *         application/json:
-//  *           schema:
-//  *             type: object
-//  *             properties:
-//  *               refreshToken:
-//  *                 type: string
-//  *                 description: 리프레시 토큰
-//  *     responses:
-//  *       200:
-//  *         description: 새로운 액세스 토큰 발급 성공
-//  *       403:
-//  *         description: 유효하지 않은 리프레시 토큰
-//  */
-// router.post("/refresh",authController.refresh)
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: 새 토큰 갱신
+ *     description: 리프레시 토큰을 통해 새로운 액세스 토큰을 발급
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user_id:
+ *                  type: string
+ *                  example: "ktb23"
+ *                  description: 아이디
+ *               refreshToken:
+ *                 type: string
+ *                 description: 리프레시 토큰
+ *     responses:
+ *       200:
+ *         description: 새로운 액세스 토큰 발급 성공
+ *       403:
+ *         description: 유효하지 않은 리프레시 토큰
+ */
+router.post("/refresh", authController.refreshToken);
 
 module.exports = router;
