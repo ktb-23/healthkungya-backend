@@ -7,14 +7,14 @@ const UpdateProfileController = async (req, res) => {
     res.status(401).json({ message: "인증 권한 없음" });
     return;
   }
-  const { profile_id, id, name, statusMessage } = req.body;
+  const { profile_id, id, nickname, statusMessage } = req.body;
   const userId = req.user.user_id;
   try {
     await profileService.UpdateProfileService(
       profile_id,
       userId,
       id,
-      name,
+      nickname,
       statusMessage,
       (err, message) => {
         if (err) {

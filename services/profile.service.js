@@ -23,7 +23,7 @@ const UpdateProfileService = async (
     "UPDATE profile_tb SET statusMessage=? WHERE profile_id = ? AND user_id = ?";
 
   // 유저 테이블 업데이트 쿼리
-  const updateUserQuery = "UPDATE user_tb SET name=? id=? WHERE user_id=?";
+  const updateUserQuery = "UPDATE user_tb SET nickname=?, id=? WHERE user_id=?";
   try {
     // profile_tb 업데이트
     await executeQuery(updateProfileQuery, [
