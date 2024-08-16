@@ -111,4 +111,25 @@ const login = (req, res) => {
   });
 };
 
-module.exports = { register, login, checkDuplicate };
+// 회원 삭제 컨트롤러
+const deleteUser = async (req, res) => {
+  //사용자 로그인하지 않은 경우 처리
+  if (!req.user) {
+    res.status(401).json({ message: "인증 권한 없음" });
+    return;
+  }
+  const userId = req.user.user_id;
+  try {
+    await authService.deleteUser(userId, (err, message) => {
+      if (err) {
+        return res.status(500).json({ message: "회원 삭제 중 오류 발생" });
+      }
+      res.status(200).json({ message: message });
+    });
+  } catch (error) {
+    console.error("프로필 수정 중 오류 발생", error);
+    return res.status(500).json({ message: "서버 내부 오류" });
+  }
+};
+
+module.exports = { register, login, checkDuplicate, deleteUser };

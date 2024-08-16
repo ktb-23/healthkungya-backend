@@ -1,5 +1,6 @@
 //라이브러리 가져오기
 const express = require("express");
+const { verifyTokenMiddleware } = require("../authorization/jwt");
 // 컨트롤러 가져오기
 const authController = require("../controllers/auth.controller");
 
@@ -54,22 +55,42 @@ router.post("/login", authController.login);
 
 /**
  * @swagger
- * /api/auth/protected:
- *   get:
- *     summary: 보호된 엔드포인트
- *     description: 인증된 유저만 접근 가능
- *     tags:
- *       - Auth
+ * /api/auth/delete:
+ *   delete:
+ *     summary: 회원 정보 삭제
+ *     description: 회원 정보를 탈퇴합니다.
+ *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: 성공
- *       403:
- *         description: 토큰이 없음
+ *         description: 성공적으로 탈퇴되었습니다.
  *       401:
- *         description: 인증 실패
+ *         description: 인증되지 않았습니다.
+ *       500:
+ *         description: 서버 내부 오류
  */
+
+router.delete("/delete", verifyTokenMiddleware, authController.deleteUser);
+
+// /**
+//  * @swagger
+//  * /api/auth/protected:
+//  *   get:
+//  *     summary: 보호된 엔드포인트
+//  *     description: 인증된 유저만 접근 가능
+//  *     tags:
+//  *       - Auth
+//  *     security:
+//  *       - bearerAuth: []
+//  *     responses:
+//  *       200:
+//  *         description: 성공
+//  *       403:
+//  *         description: 토큰이 없음
+//  *       401:
+//  *         description: 인증 실패
+//  */
 // router.get("/protected",verifyTokenMiddleware,authController.test)
 
 // /**
