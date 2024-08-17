@@ -77,5 +77,29 @@ const updateWeight = async (weight_id, user_id, body, result) => {
     result(err, null);
   }
 };
+//몸무게 조회 (JOIN을 사용하여 date_id를 가져와 바로 몸무게 조회)
+const GetWeight = async (dateValue, user_id, result) => {
+  // date_tb와 weight_tb를 JOIN하여 dateValue와 user_id로 몸무게를 조회하는 쿼리
+  const query = `
+      SELECT weight_tb.* 
+      FROM weight_tb
+      JOIN date_tb ON weight_tb.date_id = date_tb.date_id
+      WHERE date_tb.dateValue = ? AND weight_tb.user_id = ?
+    `;
 
-module.exports = { saveWeight, updateWeight };
+  try {
+    // JOIN을 사용하여 한 번에 필요한 데이터를 조회
+    const log = await executeQuery(query, [dateValue, user_id]);
+
+    if (log.length === 0) {
+      return result(null, "해당 날짜에 대한 몸무게가 존재하지 않습니다.");
+    }
+
+    result(null, log);
+  } catch (error) {
+    console.error("몸무게 조회 중 오류 발생:", error);
+    result(error, null);
+  }
+};
+
+module.exports = { saveWeight, updateWeight, GetWeight };

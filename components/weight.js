@@ -23,4 +23,23 @@ module.exports = {
     },
     required: ["weight"],
   },
+  GetWeight: {
+    type: "object",
+    properties: {
+      weight_id: {
+        type: "integer",
+      },
+      user_id: {
+        type: "integer",
+      },
+      date_id: {
+        type: "integer",
+      },
+      weight: {
+        type: "float",
+        example: "68",
+      },
+    },
+    required: ["weight_id", "user_id", "date_id", "weight"],
+  },
 };

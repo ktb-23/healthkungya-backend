@@ -68,4 +68,39 @@ router.put(
   verifyTokenMiddleware,
   weightController.UpdateWeightController
 );
+
+/**
+ * @swagger
+ * /api/weight/{dateValue}:
+ *   get:
+ *     summary: 몸무게 조회
+ *     description: 특정 날짜에 해당하는 몸무게를 조회합니다.
+ *     tags: [Weight]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: dateValue
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 2024-08-17
+ *         description: 날짜
+ *     responses:
+ *       200:
+ *         description: 몸무게를 성공적으로 조회되었습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *              $ref: '#/components/schemas/GetWeight'
+ *       401:
+ *         description: 인증되지 않았습니다.
+ *       500:
+ *         description: 서버 내부 오류
+ */
+router.get(
+  "/:dateValue",
+  verifyTokenMiddleware,
+  weightController.GetWeightController
+);
 module.exports = router;
