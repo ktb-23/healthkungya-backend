@@ -8,6 +8,7 @@ const authRouter = require("./router/auth.router");
 const exerciseRouter = require("./router/exercise.router");
 const exerciseSearchRouter = require("./router/search.router");
 const profileRouter = require("./router/profile.router");
+const graphRouter = require("./router/graph.router");
 app.use(express.json());
 app.use(cors());
 // 포트번호
@@ -20,6 +21,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/exercise_log", exerciseRouter);
 app.use("/api/exercise", exerciseSearchRouter);
 app.use("/api/profile", profileRouter);
+app.use("/api/graph", graphRouter);
 
 // 서버 실행
 app.listen(app.get("port"), () => {
