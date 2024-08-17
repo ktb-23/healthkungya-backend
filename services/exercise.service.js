@@ -75,15 +75,27 @@ const SaveExerciseLog = async (user_id, body, result) => {
   }
 };
 
-// 운동 기록 조회
-const GetExerciseLog = async (date_id, user_id, result) => {
-  const getQuery = "SELECT * FROM exlog_tb WHERE date_id = ? AND user_id = ?";
+// 운동 기록 조회 (JOIN을 사용하여 date_id를 가져와 바로 운동 기록 조회)
+const GetExerciseLog = async (dateValue, user_id, result) => {
+  // date_tb와 exlog_tb를 JOIN하여 dateValue와 user_id로 운동 기록을 조회하는 쿼리
+  const query = `
+    SELECT exlog_tb.* 
+    FROM exlog_tb
+    JOIN date_tb ON exlog_tb.date_id = date_tb.date_id
+    WHERE date_tb.dateValue = ? AND exlog_tb.user_id = ?
+  `;
 
   try {
-    const log = await executeQuery(getQuery, [date_id, user_id]);
+    // JOIN을 사용하여 한 번에 필요한 데이터를 조회
+    const log = await executeQuery(query, [dateValue, user_id]);
+
+    if (log.length === 0) {
+      return result(null, "해당 날짜에 대한 운동 기록이 존재하지 않습니다.");
+    }
+
     result(null, log);
   } catch (error) {
-    logger.error("운동 기록 조회 중 오류 발생:", error);
+    console.error("운동 기록 조회 중 오류 발생:", error);
     result(error, null);
   }
 };

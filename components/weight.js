@@ -13,4 +13,14 @@ module.exports = {
     },
     required: ["date", "weight"],
   },
+  UpdateWeight: {
+    type: "object",
+    properties: {
+      weight: {
+        type: "float",
+        example: "68",
+      },
+    },
+    required: ["weight"],
+  },
 };

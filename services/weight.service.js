@@ -58,4 +58,24 @@ const saveWeight = async (user_id, body, result) => {
   }
 };
 
-module.exports = { saveWeight };
+// 운동 기록 업데이트
+const updateWeight = async (weight_id, user_id, body, result) => {
+  const updateQuery =
+    "UPDATE weight_tb SET weight = ? WHERE weight_id = ? AND user_id = ?";
+
+  // user_tb의 weight 업데이트
+  const updateUserWeightQuery =
+    "UPDATE user_tb SET weight = ? WHERE user_id = ?";
+
+  try {
+    // weight_tb 업데이트
+    await executeQuery(updateQuery, [body.weight, weight_id, user_id]);
+    await executeQuery(updateUserWeightQuery, [body.weight, user_id]);
+    result(null, "몸무게를 성공적으로 업데이트되었습니다.");
+  } catch (err) {
+    logger.error("몸무게 업데이트 중 오류 발생:", err);
+    result(err, null);
+  }
+};
+
+module.exports = { saveWeight, updateWeight };
