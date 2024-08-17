@@ -38,7 +38,7 @@ router.post(
 );
 /**
  * @swagger
- * /api/exercise_log:
+ * /api/exercise_log/{log_id}:
  *   put:
  *     summary: 운동 기록 수정
  *     description: 운동 수정을 합니다.
@@ -46,21 +46,20 @@ router.post(
  *       - Exercise
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: log_id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 운동기록 ID
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               log_ids:
- *                 type: array
- *                 items:
- *                   type: number
- *               exercises:
- *                 type: array
- *                 items:
- *                   $ref: '#/components/schemas/UpdateExercise'
+ *              $ref: '#/components/schemas/UpdateExercise'
+ *
  *     responses:
  *       200:
  *         description: 운동 기록 수정 성공

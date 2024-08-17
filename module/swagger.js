@@ -2,6 +2,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggereJsdoc = require("swagger-jsdoc");
 const userSchemas = require("../components/auth");
 const exerciseSchemas = require("../components/exercise");
+const profileSchemas = require("../components/profile");
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -26,6 +27,7 @@ const options = {
       schemas: {
         ...userSchemas,
         ...exerciseSchemas,
+        ...profileSchemas,
       },
     },
   },
