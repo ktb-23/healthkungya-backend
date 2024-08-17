@@ -1,3 +1,4 @@
+const { verifyRefreshToken, generateToken } = require("../authorization/jwt");
 const authService = require("../services/auth.service");
 
 // 유효성 검사 함수
@@ -111,4 +112,44 @@ const login = (req, res) => {
   });
 };
 
-module.exports = { register, login, checkDuplicate };
+// 회원 삭제 컨트롤러
+const deleteUser = async (req, res) => {
+  //사용자 로그인하지 않은 경우 처리
+  if (!req.user) {
+    res.status(401).json({ message: "인증 권한 없음" });
+    return;
+  }
+  const userId = req.user.user_id;
+  try {
+    await authService.deleteUser(userId, (err, message) => {
+      if (err) {
+        return res.status(500).json({ message: "회원 삭제 중 오류 발생" });
+      }
+      res.status(200).json({ message: message });
+    });
+  } catch (error) {
+    console.error("프로필 수정 중 오류 발생", error);
+    return res.status(500).json({ message: "서버 내부 오류" });
+  }
+};
+
+const refreshToken = async (req, res) => {
+  const { refreshToken, userId } = req.body;
+  if (!refreshToken) {
+    return res.status(403).json({ message: "리프레쉬 토큰이 없습니다." });
+  }
+  if (!refreshToken.includes(refreshToken)) {
+    return res
+      .status(403)
+      .json({ message: "유효하지 않은 리프레쉬 토큰 입니다." });
+  }
+  const decoded = verifyRefreshToken(refreshToken);
+  if (decoded) {
+    const accesstoken = generateToken({ user_id: userId });
+    return res.json({ accesstoken: accesstoken });
+  } else {
+    return res.status(403).json("리프레쉬 토큰 검증 실패");
+  }
+};
+
+module.exports = { register, login, checkDuplicate, deleteUser, refreshToken };
