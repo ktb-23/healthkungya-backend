@@ -4,6 +4,7 @@ const userSchemas = require("../components/auth");
 const exerciseSchemas = require("../components/exercise");
 const profileSchemas = require("../components/profile");
 const graphSchemas = require("../components/graph");
+const weightSchemas = require("../components/weight");
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -30,6 +31,7 @@ const options = {
         ...exerciseSchemas,
         ...profileSchemas,
         ...graphSchemas,
+        ...weightSchemas,
       },
     },
   },
