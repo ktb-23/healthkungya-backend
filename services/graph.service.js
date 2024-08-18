@@ -97,7 +97,42 @@ const getWeeklyExerciseData = async (user_id, dateValue, result) => {
     result(error, null);
   }
 };
+const getWeeklyWeightData = async (user_id, dateValue, result) => {
+  const weeklyQuery = `
+  SELECT 
+    date_tb.dateValue AS date,
+    DAYNAME(date_tb.dateValue) AS day, 
+    DAYOFWEEK(date_tb.dateValue) AS dayOfWeek,
+    weight_tb.weight
+  FROM 
+    weight_tb
+  JOIN 
+    date_tb ON weight_tb.date_id = date_tb.date_id
+  JOIN 
+    user_tb ON weight_tb.user_id = user_tb.user_id
+  WHERE 
+    date_tb.user_id = ? 
+    AND YEARWEEK(date_tb.dateValue, 1) = YEARWEEK(?, 1)
+  ORDER BY 
+    DAYOFWEEK(date_tb.dateValue);
+  `;
+  try {
+    const weeklyData = await executeQuery(weeklyQuery, [user_id, dateValue]);
+
+    // 쿼리 결과가 정상적으로 반환되었는지 확인
+    if (!weeklyData || weeklyData.length === 0) {
+      return result(null, "해당 주차에 대한 몸무게 데이터가 없습니다.");
+    }
+
+    result(null, weeklyData);
+  } catch (error) {
+    // 오류 로그 상세히 출력
+    console.error("몸무게 데이터 조회 중 오류 발생:", error);
+    result(error, null);
+  }
+};
 
 module.exports = {
   getWeeklyExerciseData,
+  getWeeklyWeightData,
 };

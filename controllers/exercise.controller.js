@@ -62,11 +62,11 @@ const GetExerciseLogController = async (req, res) => {
     res.status(401).json({ message: "인증 권한 없음" });
     return;
   }
-  const { date_id } = req.params;
+  const { dateValue } = req.params;
   const userId = req.user.user_id;
   try {
     // 운동 기록 조회 서비스 호출
-    await exerciseService.GetExerciseLog(date_id, userId, (err, data) => {
+    await exerciseService.GetExerciseLog(dateValue, userId, (err, data) => {
       if (err) {
         return res
           .status(500)

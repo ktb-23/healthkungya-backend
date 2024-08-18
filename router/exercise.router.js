@@ -76,7 +76,7 @@ router.put(
 );
 /**
  * @swagger
- * /api/exercise_log/{date_id}:
+ * /api/exercise_log/{dateValue}:
  *   get:
  *     summary: 운동 기록 조회
  *     description: 특정 날짜에 해당하는 운동 기록을 조회합니다.
@@ -84,12 +84,13 @@ router.put(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: date_id
+ *       - name: dateValue
  *         in: path
  *         required: true
  *         schema:
- *           type: integer
- *         description: 날짜 ID
+ *           type: string
+ *           example: 2024-08-17
+ *         description: 날짜
  *     responses:
  *       200:
  *         description: 운동 기록이 성공적으로 조회되었습니다.
@@ -104,7 +105,7 @@ router.put(
  */
 
 router.get(
-  "/:date_id",
+  "/:dateValue",
   verifyTokenMiddleware,
   exerciseController.GetExerciseLogController
 );
