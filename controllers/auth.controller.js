@@ -134,7 +134,7 @@ const deleteUser = async (req, res) => {
 };
 
 const refreshToken = async (req, res) => {
-  const { refreshToken, userId } = req.body;
+  const { refreshToken, user_id } = req.body;
   if (!refreshToken) {
     return res.status(403).json({ message: "리프레쉬 토큰이 없습니다." });
   }
@@ -145,7 +145,7 @@ const refreshToken = async (req, res) => {
   }
   const decoded = verifyRefreshToken(refreshToken);
   if (decoded) {
-    const accesstoken = generateToken({ user_id: userId });
+    const accesstoken = generateToken({ user_id: user_id });
     return res.json({ accesstoken: accesstoken });
   } else {
     return res.status(403).json("리프레쉬 토큰 검증 실패");
