@@ -124,6 +124,7 @@ const login = async (id, password, result) => {
     const refreshtoken = generateRefreshToken({ user_id: user.user_id });
 
     result(null, {
+      user_id: user.user_id,
       nickname: user.nickname,
       weight: user.weight,
       accesstoken: accesstoken,
