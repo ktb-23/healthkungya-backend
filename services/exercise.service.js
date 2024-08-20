@@ -165,11 +165,26 @@ const deleteExerciseLog = async (log_id, date_id, user_id, result) => {
     result(err, null);
   }
 };
-
+const GetAllDateExlog = async (user_id, result) => {
+  const query = `
+  SELECT dateValue 
+  FROM date_tb
+  JOIN exlog_tb ON exlog_tb.date_id = date_tb.date_id
+  WHERE exlog_tb.user_id = ?
+`;
+  try {
+    const rows = await executeQuery(query, [user_id]);
+    result(null, rows);
+  } catch (err) {
+    logger.error("전체 운동기록 조회 중 오류", err);
+    result(err, null);
+  }
+};
 module.exports = {
   SaveExerciseLog,
   UpdateExerciseLog,
   GetExerciseLog,
   SearchExercise,
   deleteExerciseLog,
+  GetAllDateExlog,
 };

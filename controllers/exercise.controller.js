@@ -80,6 +80,7 @@ const GetExerciseLogController = async (req, res) => {
   }
 };
 
+// 운동 검색
 const GetSearchExerciseController = async (req, res) => {
   const ex = req.query.type;
   if (!ex) {
@@ -101,6 +102,7 @@ const GetSearchExerciseController = async (req, res) => {
   }
 };
 
+// 운동기록 삭제
 const DeleteExerciseLogController = async (req, res) => {
   // 사용자가 로그인하지 않은 경우 처리
   if (!req.user) {
@@ -132,10 +134,34 @@ const DeleteExerciseLogController = async (req, res) => {
   }
 };
 
+// 전체 운동기록 조회
+const GetAllDateExlogLogController = async (req, res) => {
+  // 사용자가 로그인하지 않은 경우 처리
+  if (!req.user) {
+    res.status(401).json({ message: "인증 권한 없음" });
+    return;
+  }
+  const userId = req.user.user_id;
+  try {
+    await exerciseService.GetAllDateExlog(userId, (err, data) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "전체 운동기록 조회 중 오류 발생", error: err });
+      }
+      return res.status(200).json(data);
+    });
+  } catch (error) {
+    console.error("전체 운동기록 조회 중 오류 발생", error);
+    return res.status(500).json({ message: "서버 내부 오류" });
+  }
+};
+
 module.exports = {
   SaveExerciseLogController,
   UpdateExerciseLogController,
   GetExerciseLogController,
   GetSearchExerciseController,
   DeleteExerciseLogController,
+  GetAllDateExlogLogController,
 };

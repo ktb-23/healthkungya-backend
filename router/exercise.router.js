@@ -146,4 +146,31 @@ router.delete(
   verifyTokenMiddleware,
   exerciseController.DeleteExerciseLogController
 );
+
+/**
+ * @swagger
+ * /api/exercise_log//date/exlog:
+ *   get:
+ *     summary: 운동 기록 조회
+ *     description: 날짜에 해당하는 전체 운동 기록을 조회합니다.
+ *     tags: [Exercise]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 전체 운동 기록 날짜가 성공적으로 조회되었습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *              $ref: '#/components/schemas/GetExercise'
+ *       401:
+ *         description: 인증되지 않았습니다.
+ *       500:
+ *         description: 서버 내부 오류
+ */
+router.get(
+  "/date/exlog",
+  verifyTokenMiddleware,
+  exerciseController.GetAllDateExlogLogController
+);
 module.exports = router;
