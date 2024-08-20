@@ -11,9 +11,9 @@
    git clone https://github.com/your-repo/healthkungya-backend.git
    cd healthkungya-backend
 
-   의존성 설치: npm install
+   의존성 설치: yarn install
 
-   개발 실행: npm run dev
+   개발 실행: yarn dev
 ## DB 설정
 config 폴더에 db.config.js 수정
 <code>
