@@ -149,7 +149,7 @@ router.delete(
 
 /**
  * @swagger
- * /api/exercise_log//date/exlog:
+ * /api/exercise_log/date/exlog:
  *   get:
  *     summary: 운동 기록 조회
  *     description: 날짜에 해당하는 전체 운동 기록을 조회합니다.
@@ -162,7 +162,7 @@ router.delete(
  *         content:
  *           application/json:
  *             schema:
- *              $ref: '#/components/schemas/GetExercise'
+ *              $ref: '#/components/schemas/GetAllExerciseDate'
  *       401:
  *         description: 인증되지 않았습니다.
  *       500:
