@@ -116,4 +116,14 @@ module.exports = {
     },
     required: ["exitem_id", "ex", "met"],
   },
+  GetAllExerciseDate: {
+    type: "object",
+    properties: {
+      dateValue: {
+        type: "string",
+        example: "2024.07.26",
+      },
+    },
+    required: ["dateValue"],
+  },
 };
