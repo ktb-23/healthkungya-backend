@@ -78,9 +78,9 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker logout 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com 
+            sudo docker logout 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
-            docker pull 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
+            sudo docker pull 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
     
       - name: Run new Docker container
         uses: appleboy/ssh-action@master
