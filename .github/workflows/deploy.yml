@@ -91,4 +91,4 @@ jobs:
           script: |
             docker stop healthcareBE || true
             docker rm healthcareBE || true
-            docker run -d --name healthcareBE -p 3000:3000 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
+            docker run -d --name healthcareBE -p 8000:8000 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
