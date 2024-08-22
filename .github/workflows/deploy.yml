@@ -16,7 +16,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '14'
+        node-version: '22.X'
 
     - name: Install dependencies
       run: npm install
@@ -29,17 +29,17 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: your-aws-region
+        aws-region: ap-northeast-2
 
     - name: Log in to Amazon ECR
       run: |
-        aws ecr get-login-password --region your-aws-region | docker login --username AWS --password-stdin 123456789012.dkr.ecr.your-aws-region.amazonaws.com
+        aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
 
     - name: Build, tag, and push Docker image
       run: |
-        docker build -t your-repo-name .
-        docker tag your-repo-name:latest 123456789012.dkr.ecr.your-aws-region.amazonaws.com/your-repo-name:latest
-        docker push 123456789012.dkr.ecr.your-aws-region.amazonaws.com/your-repo-name:latest
+        docker build -t healthcarebackend .
+        docker tag healthcarebackend:latest 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
+        docker push 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
 
   deploy:
     needs: build
@@ -63,7 +63,7 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         script: |
           echo "Logging into Amazon ECR"
-          aws ecr get-login-password --region your-aws-region | docker login --username AWS --password-stdin 123456789012.dkr.ecr.your-aws-region.amazonaws.com
+          aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
 
     - name: Pull Docker image from ECR
       uses: appleboy/ssh-action@v0.1.3
@@ -73,7 +73,7 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         script: |
           echo "Pulling Docker image from ECR"
-          docker pull 123456789012.dkr.ecr.your-aws-region.amazonaws.com/your-repo-name:latest
+          docker pull 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
 
     - name: Stop existing Docker container
       uses: appleboy/ssh-action@v0.1.3
@@ -103,4 +103,4 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         script: |
           echo "Running new Docker container"
-          docker run -d --name healthcareBE -p 80:3000 123456789012.dkr.ecr.your-aws-region.amazonaws.com/your-repo-name:latest
+          docker run -d --name healthcareBE -p 80:3000 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
