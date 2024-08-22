@@ -1,4 +1,4 @@
-name: Deploy to EC2 via ECR
+name: Deploy Node.js App to AWS ECR and EC2
 
 on:
   push:
@@ -6,102 +6,98 @@ on:
       - dev
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22.X'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Set up AWS credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
-
+        
       - name: Log in to Amazon ECR
         run: |
           aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
 
-      - name: Build, tag, and push Docker image
-        run: |
-          docker build -t healthcarebackend .
-          docker tag healthcarebackend:latest 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
-          docker push 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
+      - name: Delete latest tag from ECR
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            aws ecr batch-delete-image --repository-name healthcarebackend --image-ids imageTag=latest
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Build & Deploy
+      - name: Build and push Docker image
         env:
-          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          HOSTNAME: ${{ secrets.SSH_HOST }}
-          USER_NAME: ${{ secrets.USER_NAME }}
+          ECR_REGISTRY: 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com
+          ECR_REPOSITORY: healthcarebackend
+          IMAGE_TAG: latest
         run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} << 'EOF'
-          echo "Connected to EC2 instance"
-          EOF
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Log in to Amazon ECR
-        uses: appleboy/ssh-action@v0.1.3
+      - name: Log in to EC2 and pull Docker image
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "Logging into Amazon ECR"
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
-
-      - name: Pull Docker image from ECR
-        uses: appleboy/ssh-action@v0.1.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            echo "Pulling Docker image from ECR"
             docker pull 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
 
-      - name: Stop existing Docker container
-        uses: appleboy/ssh-action@v0.1.3
+      - name: Stop and remove existing Docker container
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "Stopping existing Docker container"
-            docker stop healthcareBE || true
+            sudo docker ps -q | xargs -r docker stop
+            sudo docker ps -asq | xargs -r docker rm
 
-      - name: Remove existing Docker container
-        uses: appleboy/ssh-action@v0.1.3
+      - name: Remove unused Docker images
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "Removing existing Docker container"
-            docker rm healthcareBE || true
+            sudo docker images -q | xargs -r docker rmi
 
+      - name: Prune Docker system
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo docker system prune -af
+    
+      - name: Log in to ECR and pull image (re-login)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker logout 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com 
+            aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
+            docker pull 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
+    
       - name: Run new Docker container
-        uses: appleboy/ssh-action@v0.1.3
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "Running new Docker container"
-            docker run -d --name healthcareBE -p 80:3000 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
+            docker stop healthcareBE || true
+            docker rm healthcareBE || true
+            docker run -d --name healthcareBE -p 3000:3000 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
