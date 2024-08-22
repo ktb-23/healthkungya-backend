@@ -24,15 +24,6 @@ jobs:
         run: |
           aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
 
-      - name: Delete latest tag from ECR
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_IP }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            aws ecr batch-delete-image --repository-name healthcarebackend --image-ids imageTag=latest
-
       - name: Build and push Docker image
         env:
           ECR_REGISTRY: 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com
