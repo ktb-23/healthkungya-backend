@@ -78,7 +78,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo docker logout 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com
+            docker logout 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com
             sudo -E aws ecr get-login-password --region ap-northeast-2 | sudo docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
             sudo docker pull 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
     
