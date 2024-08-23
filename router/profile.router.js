@@ -2,6 +2,7 @@ const express = require("express");
 // 컨트롤러 가져오기
 const { verifyTokenMiddleware } = require("../authorization/jwt");
 const profileController = require("../controllers/profile.controller");
+const uploadimg = require("../module/uploadimg");
 
 //라우터
 const router = express.Router();
@@ -59,5 +60,12 @@ router.put(
   "/",
   verifyTokenMiddleware,
   profileController.UpdateProfileController
+);
+
+router.post(
+  "/image",
+  verifyTokenMiddleware,
+  uploadimg.single("profileImage"),
+  profileController.SaveProfileImageController
 );
 module.exports = router;
