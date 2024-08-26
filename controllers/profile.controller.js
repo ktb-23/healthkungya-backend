@@ -58,9 +58,12 @@ const SaveProfileImageController = async (req, res) => {
     res.status(401).json({ message: "인증 권한 없음" });
     return;
   }
-  const images = req.file;
-  const imageKey = images.key;
-  const imageUrl = `https://healthkungya-asset.s3.ap-northeast-2.amazonaws.com/profile/${imageKey}`;
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+  console.log(req.file);
+  const imageKey = req.file.key;
+  const imageUrl = `https://ktb-23-healthkungya-backend.s3.ap-northeast-2.amazonaws.com/${imageKey}`;
   const userId = req.user.user_id;
   try {
     await profileService.SaveProfileImage(userId, imageUrl, (err, message) => {
