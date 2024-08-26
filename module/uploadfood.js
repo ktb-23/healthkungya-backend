@@ -15,7 +15,6 @@ const uploadFoodImage = multer({
   storage: multerS3({
     s3: s3,
     bucket: "healthkungya-front", // S3 버킷 이름
-    acl: "public-read",
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
       const filename = `food/${Date.now().toString()}-${file.originalname}`;
