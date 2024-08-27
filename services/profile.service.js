@@ -65,7 +65,26 @@ const UpdateProfileService = async (
     result(error, null);
   }
 };
+//파일 이미지 url 저장
+const SaveProfileImage = async (user_id, imageUrl, result) => {
+  try {
+    // 프로필 이미지 URL을 데이터베이스에 저장하는 쿼리
+    const updateImageUrlQuery = `
+    UPDATE profile_tb 
+    SET imageUrl = ? 
+    WHERE user_id = ?;
+  `;
+
+    // 데이터베이스에 이미지 URL 업데이트
+    await executeQuery(updateImageUrlQuery, [imageUrl, user_id]);
+    result(null, { message: "프로필 이미지 저장 성공", imageUrl });
+  } catch (error) {
+    console.error("프로필 이미지 저장 중 오류 발생:", error);
+    result(error, null);
+  }
+};
 module.exports = {
   UpdateProfileService,
   GetProfileService,
+  SaveProfileImage,
 };

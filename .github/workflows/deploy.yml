@@ -1,0 +1,99 @@
+name: Deploy Node.js App to AWS ECR,EC2
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Install Yarn
+        run: |
+          npm install -g yarn
+        
+      - name: Log in to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
+
+      - name: Build and push Docker image
+        env:
+          ECR_REGISTRY: 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com
+          ECR_REPOSITORY: healthcarebackend
+          IMAGE_TAG: latest
+        run: |
+          yarn install
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Log in to EC2 and pull Docker image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
+            docker pull 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
+
+      - name: Stop and remove existing Docker container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo docker ps -q | xargs -r docker stop
+            sudo docker ps -asq | xargs -r docker rm
+
+      - name: Remove unused Docker images
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo docker images -q | xargs -r docker rmi
+
+      - name: Prune Docker system
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo docker system prune -af
+    
+      - name: Log in to ECR and pull image (re-login)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo docker logout 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com
+            sudo -E aws ecr get-login-password --region ap-northeast-2 | sudo docker login --username AWS --password-stdin 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend
+            sudo docker pull 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest
+    
+      - name: Run new Docker container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker stop healthcareBE || true
+            docker rm healthcareBE || true
+            docker run -d --name healthcareBE -p 8000:8000 975049946739.dkr.ecr.ap-northeast-2.amazonaws.com/healthcarebackend:latest

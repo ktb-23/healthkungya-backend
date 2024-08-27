@@ -75,15 +75,27 @@ const SaveExerciseLog = async (user_id, body, result) => {
   }
 };
 
-// 운동 기록 조회
-const GetExerciseLog = async (date_id, user_id, result) => {
-  const getQuery = "SELECT * FROM exlog_tb WHERE date_id = ? AND user_id = ?";
+// 운동 기록 조회 (JOIN을 사용하여 date_id를 가져와 바로 운동 기록 조회)
+const GetExerciseLog = async (dateValue, user_id, result) => {
+  // date_tb와 exlog_tb를 JOIN하여 dateValue와 user_id로 운동 기록을 조회하는 쿼리
+  const query = `
+    SELECT exlog_tb.* 
+    FROM exlog_tb
+    JOIN date_tb ON exlog_tb.date_id = date_tb.date_id
+    WHERE date_tb.dateValue = ? AND exlog_tb.user_id = ?
+  `;
 
   try {
-    const log = await executeQuery(getQuery, [date_id, user_id]);
+    // JOIN을 사용하여 한 번에 필요한 데이터를 조회
+    const log = await executeQuery(query, [dateValue, user_id]);
+
+    if (log.length === 0) {
+      return result(null, "해당 날짜에 대한 운동 기록이 존재하지 않습니다.");
+    }
+
     result(null, log);
   } catch (error) {
-    logger.error("운동 기록 조회 중 오류 발생:", error);
+    console.error("운동 기록 조회 중 오류 발생:", error);
     result(error, null);
   }
 };
@@ -126,38 +138,71 @@ const SearchExercise = async (ex, result) => {
 
 // 운동 기록 삭제
 const deleteExerciseLog = async (log_id, date_id, user_id, result) => {
+  // exlog_tb에서 특정 운동 기록을 삭제하는 쿼리
   const deleteExLogQuery =
     "DELETE FROM exlog_tb WHERE log_id = ? AND user_id = ?";
-  const checkRemainingLogsQuery =
-    "SELECT COUNT(*) as count FROM exlog_tb WHERE date_id = ?";
+
+  // 특정 날짜에 남아있는 운동, 음식, 몸무게 기록이 있는지 확인하는 쿼리
+  const checkRemainingLogsQuery = `
+    SELECT 
+      (SELECT COUNT(*) FROM exlog_tb WHERE date_id = ? AND user_id = ?) AS exercise_count,
+      (SELECT COUNT(*) FROM foodlog_tb WHERE date_id = ? AND user_id = ?) AS food_count,
+      (SELECT COUNT(*) FROM weight_tb WHERE date_id = ? AND user_id = ?) AS weight_count
+  `;
+
+  // date_tb에서 날짜 기록을 삭제하는 쿼리
   const deleteDateQuery =
     "DELETE FROM date_tb WHERE date_id = ? AND user_id = ?";
 
   try {
-    // 1. 운동 기록 삭제
+    // 1. 특정 운동 기록을 삭제
     await executeQuery(deleteExLogQuery, [log_id, user_id]);
 
-    // 2. 해당 날짜에 다른 운동 기록이 남아있는지 확인
+    // 2. 해당 날짜에 다른 기록이 남아있는지 확인
     const remainingLogs = await executeQuery(checkRemainingLogsQuery, [
       date_id,
+      user_id,
+      date_id,
+      user_id,
+      date_id,
+      user_id,
     ]);
 
-    // 3. 다른 운동 기록이 없으면 date_tb에서 날짜 삭제
-    if (remainingLogs[0].count === 0) {
+    const { exercise_count, food_count, weight_count } = remainingLogs[0];
+
+    // 3. 만약 운동, 음식, 몸무게 기록이 모두 없다면 날짜 기록 삭제
+    if (exercise_count === 0 && food_count === 0 && weight_count === 0) {
       await executeQuery(deleteDateQuery, [date_id, user_id]);
     }
 
+    // 4. 성공 메시지 반환
     result(null, "운동 기록이 성공적으로 삭제되었습니다.");
   } catch (err) {
-    logger.error("운동 기록 삭제 중 오류 발생:", err);
+    console.error("운동 기록 삭제 중 오류 발생:", err);
     result(err, null);
   }
 };
 
+const GetAllDateExlog = async (user_id, result) => {
+  const query = `
+  SELECT dateValue 
+  FROM date_tb
+  JOIN exlog_tb ON exlog_tb.date_id = date_tb.date_id
+  WHERE exlog_tb.user_id = ?
+`;
+  try {
+    const rows = await executeQuery(query, [user_id]);
+    result(null, rows);
+  } catch (err) {
+    logger.error("전체 운동기록 조회 중 오류", err);
+    result(err, null);
+  }
+};
 module.exports = {
   SaveExerciseLog,
   UpdateExerciseLog,
   GetExerciseLog,
   SearchExercise,
   deleteExerciseLog,
+  GetAllDateExlog,
 };

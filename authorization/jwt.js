@@ -39,7 +39,7 @@ function verifyRefreshToken(token) {
 function verifyTokenMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    return res.status(403).json({ message: "Authorization header is missing" });
+    return res.status(403).json({ message: "인증 권한 헤더가 없음" });
   }
   const token = authHeader.split("Bearer ")[1]; // header에서 access token을 가져옵니다.
   if (!token) {

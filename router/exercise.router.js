@@ -76,7 +76,7 @@ router.put(
 );
 /**
  * @swagger
- * /api/exercise_log/{date_id}:
+ * /api/exercise_log/{dateValue}:
  *   get:
  *     summary: 운동 기록 조회
  *     description: 특정 날짜에 해당하는 운동 기록을 조회합니다.
@@ -84,12 +84,13 @@ router.put(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: date_id
+ *       - name: dateValue
  *         in: path
  *         required: true
  *         schema:
- *           type: integer
- *         description: 날짜 ID
+ *           type: string
+ *           example: 2024-08-17
+ *         description: 날짜
  *     responses:
  *       200:
  *         description: 운동 기록이 성공적으로 조회되었습니다.
@@ -104,7 +105,7 @@ router.put(
  */
 
 router.get(
-  "/:date_id",
+  "/:dateValue",
   verifyTokenMiddleware,
   exerciseController.GetExerciseLogController
 );
@@ -144,5 +145,32 @@ router.delete(
   "/:log_id/:date_id",
   verifyTokenMiddleware,
   exerciseController.DeleteExerciseLogController
+);
+
+/**
+ * @swagger
+ * /api/exercise_log/date/exlog:
+ *   get:
+ *     summary: 운동 기록 조회
+ *     description: 날짜에 해당하는 전체 운동 기록을 조회합니다.
+ *     tags: [Exercise]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 전체 운동 기록 날짜가 성공적으로 조회되었습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *              $ref: '#/components/schemas/GetAllExerciseDate'
+ *       401:
+ *         description: 인증되지 않았습니다.
+ *       500:
+ *         description: 서버 내부 오류
+ */
+router.get(
+  "/date/exlog",
+  verifyTokenMiddleware,
+  exerciseController.GetAllDateExlogLogController
 );
 module.exports = router;

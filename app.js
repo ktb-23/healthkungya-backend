@@ -9,6 +9,7 @@ const exerciseRouter = require("./router/exercise.router");
 const exerciseSearchRouter = require("./router/search.router");
 const profileRouter = require("./router/profile.router");
 const graphRouter = require("./router/graph.router");
+const weightRouter = require("./router/weight.router");
 const foodRouter = require("./router/food.router");
 
 app.use(express.json());
@@ -29,6 +30,7 @@ app.use("/api/exercise_log", exerciseRouter);
 app.use("/api/exercise", exerciseSearchRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/graph", graphRouter);
+app.use("/api/weight", weightRouter);
 app.use("/api/food", foodRouter);
 
 // 서버 실행

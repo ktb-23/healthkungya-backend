@@ -109,9 +109,9 @@ router.delete("/delete", verifyTokenMiddleware, authController.deleteUser);
  *             type: object
  *             properties:
  *               user_id:
- *                  type: string
- *                  example: "ktb23"
- *                  description: 아이디
+ *                  type: integer
+ *                  example: 1
+ *                  description: 유저 아이디
  *               refreshToken:
  *                 type: string
  *                 description: 리프레시 토큰
