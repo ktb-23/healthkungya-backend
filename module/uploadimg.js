@@ -49,7 +49,7 @@ const deleteExistingFile = async (user_id) => {
 const uploadimg = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "ktb-23-healthkungya-backend",
+    bucket: "ktb-23-healthkungya-be",
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: async function (req, file, cb) {
       const userId = req.user.user_id;
