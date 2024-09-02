@@ -6,11 +6,7 @@ const connection = require("../db");
 
 // AWS 자격증명 .env파일에서 환경변수들을 갖고 온다.
 const s3 = new S3({
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-  region: process.env.AWS_REGION,
+  region: "ap-northeast-2",
 });
 
 // 공통 쿼리 실행 함수
