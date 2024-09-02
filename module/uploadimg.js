@@ -33,7 +33,7 @@ const deleteExistingFile = async (user_id) => {
 
       // S3에서 파일 삭제
       await s3.deleteObject({
-        Bucket: "ktb-23-healthkungya-backend",
+        Bucket: "ktb-23-healthkungya-be",
         Key: filename,
       });
 
