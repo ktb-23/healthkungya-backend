@@ -11,7 +11,7 @@ const SaveFoodImageController = async (req, res) => {
 
   const { date, mealtype } = req.query;
   const imageKey = req.file.key;
-  const imageUrl = `https://healthkungya-asset.s3.ap-northeast-2.amazonaws.com/${imageKey}`;
+  const imageUrl = `https://ktb-23-healthkungya-be.s3.ap-northeast-2.amazonaws.com/${imageKey}`;
   const userId = req.user.user_id;
 
   try {
