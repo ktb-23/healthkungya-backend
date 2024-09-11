@@ -14,11 +14,11 @@
 
 1. 설치 & 세팅
 
-   - Code - Preference - Extentions 에서 EsLint 검색 후 Install를 눌러서 설치한다. 
+   - Code - Preference - Extentions 에서 EsLint 검색 후 Install를 눌러서 설치한다.
 
     <pre><code>
       //.eslintrc.js
-
+   
       "eslintConfig": {
        "extends": "react-app"
        }
