@@ -10,6 +10,8 @@ const exerciseSearchRouter = require("./router/search.router");
 const profileRouter = require("./router/profile.router");
 const graphRouter = require("./router/graph.router");
 const weightRouter = require("./router/weight.router");
+const foodRouter = require("./router/food.router");
+
 app.use(express.json());
 app.use(cors());
 // 포트번호
@@ -24,6 +26,7 @@ app.use("/api/exercise", exerciseSearchRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/graph", graphRouter);
 app.use("/api/weight", weightRouter);
+app.use("/api/food", foodRouter);
 
 // 서버 실행
 app.listen(app.get("port"), () => {
