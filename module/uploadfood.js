@@ -8,16 +8,18 @@ const s3 = new S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
-  region: process.env.AWS_REGION,
+  region: "ap-northeast-2",
 });
 
 const uploadFoodImage = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "healthkungya-front", // S3 버킷 이름
+    bucket: "healthkungya-asset", // S3 버킷 이름
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
-      const filename = `food/${Date.now().toString()}-${file.originalname}`;
+      const userId = req.user.user_id;
+      const timestamp = Date.now();
+      const filename = `food/${userId}_${timestamp}.png`;
       cb(null, filename);
     },
   }),
