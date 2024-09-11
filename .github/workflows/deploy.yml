@@ -3,7 +3,7 @@ name: Build and Push Docker Image to AWS ECR
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   build-and-push:
@@ -23,7 +23,7 @@ jobs:
       - name: Install Yarn
         run: |
           npm install -g yarn
-        
+
       - name: Log in to Amazon ECR
         run: |
           aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 471112681394.dkr.ecr.ap-northeast-2.amazonaws.com/ktb-23-healthkungya-storage-dev
