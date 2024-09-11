@@ -82,4 +82,5 @@ router.get("/exercise", verifyTokenMiddleware, graphController.ExerciseGraph);
  *         description: '서버 내부 오류입니다. 데이터를 가져오는 중 오류가 발생했습니다.'
  */
 router.get("/weight", verifyTokenMiddleware, graphController.WeightGraph);
+router.get("/food", verifyTokenMiddleware, graphController.FoodGraph);
 module.exports = router;
