@@ -1,4 +1,4 @@
-name: Deploy Node.js App to AWS ECR,EC2
+name: Build and Push Docker Image to AWS ECR
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - dev
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,63 +37,3 @@ jobs:
           yarn install
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-      - name: Log in to EC2 and pull Docker image
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_IP }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 471112681394.dkr.ecr.ap-northeast-2.amazonaws.com/ktb-23-healthkungya-storage-dev
-            docker pull 471112681394.dkr.ecr.ap-northeast-2.amazonaws.com/ktb-23-healthkungya-storage-dev:latest
-
-      - name: Stop and remove existing Docker container
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_IP }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            sudo docker ps -q | xargs -r docker stop
-            sudo docker ps -asq | xargs -r docker rm
-
-      - name: Remove unused Docker images
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_IP }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            sudo docker images -q | xargs -r docker rmi
-
-      - name: Prune Docker system
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_IP }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            sudo docker system prune -af
-    
-      - name: Log in to ECR and pull image (re-login)
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_IP }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            sudo docker logout 471112681394.dkr.ecr.ap-northeast-2.amazonaws.com
-            sudo -E aws ecr get-login-password --region ap-northeast-2 | sudo docker login --username AWS --password-stdin 471112681394.dkr.ecr.ap-northeast-2.amazonaws.com/ktb-23-healthkungya-storage-dev
-            sudo docker pull 471112681394.dkr.ecr.ap-northeast-2.amazonaws.com/ktb-23-healthkungya-storage-dev:latest
-    
-      - name: Run new Docker container
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_IP }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            docker stop healthcareBE || true
-            docker rm healthcareBE || true
-            docker run -d --name healthcareBE -p 8000:8000 471112681394.dkr.ecr.ap-northeast-2.amazonaws.com/ktb-23-healthkungya-storage-dev:latest
