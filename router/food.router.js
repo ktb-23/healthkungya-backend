@@ -17,6 +17,13 @@ router.put(
   foodController.SaveFoodLog
 );
 router.get("/", verifyTokenMiddleware, foodController.GetFoodLog);
+
+router.get("/all", verifyTokenMiddleware, foodController.GetAllFoodLog);
+router.get(
+  "/date/foodlog",
+  verifyTokenMiddleware,
+  foodController.GetAllDateFoodlogLogController
+);
 const executeQuery = (query, params) => {
   return new Promise((resolve, reject) => {
     connection.query(query, params, (err, res) => {
