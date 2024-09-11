@@ -13,12 +13,7 @@ const weightRouter = require("./router/weight.router");
 const foodRouter = require("./router/food.router");
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["http://localhost:8000", "http://localhost:5001"],
-    credentials: true,
-  })
-);
+app.use(cors());
 // 포트번호
 app.set("port", process.env.PORT || 8000);
 

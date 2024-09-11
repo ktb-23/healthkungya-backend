@@ -99,8 +99,39 @@ const getFoodLog = async (userId, date, mealtype) => {
     throw error;
   }
 };
+
+const getAllFoodLog = async (userId, date) => {
+  const date_id = await getDateId(userId, date);
+  try {
+    const existingLogQuery =
+      "SELECT * FROM foodlog_tb WHERE date_id = ? AND user_id = ?";
+    const existingLog = await executeQuery(existingLogQuery, [date_id, userId]);
+    console.log(existingLog);
+    return existingLog;
+  } catch (error) {
+    console.error("음식 기록 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
+const GetAllDateFoodlog = async (user_id, result) => {
+  const query = `
+  SELECT dateValue 
+  FROM date_tb
+  JOIN  foodlog_tb ON foodlog_tb.date_id = date_tb.date_id
+  WHERE foodlog_tb.user_id = ?
+`;
+  try {
+    const rows = await executeQuery(query, [user_id]);
+    result(null, rows);
+  } catch (err) {
+    logger.error("전체 음식기록 조회 중 오류", err);
+    result(err, null);
+  }
+};
 module.exports = {
   SavefoodImage,
   SaveFoodLog,
   getFoodLog,
+  getAllFoodLog,
+  GetAllDateFoodlog,
 };
