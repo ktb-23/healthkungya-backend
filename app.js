@@ -20,6 +20,9 @@ app.set("port", process.env.PORT || 8000);
 // 스웨거
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
+app.get("/health", (req, res) => {
+  res.send("ok");
+});
 app.use("/api/auth", authRouter);
 app.use("/api/exercise_log", exerciseRouter);
 app.use("/api/exercise", exerciseSearchRouter);

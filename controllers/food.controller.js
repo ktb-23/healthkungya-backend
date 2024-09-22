@@ -22,7 +22,7 @@ const SaveFoodImageController = async (req, res) => {
       imageUrl
     );
 
-    const predictResponse = await axios.get("http://127.0.0.1:5001/predict", {
+    const predictResponse = await axios.get("http://172.30.3.66:5001/predict", {
       params: { image_url: imageUrl, foodlog_id },
     });
 

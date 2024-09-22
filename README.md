@@ -18,7 +18,7 @@
 
     <pre><code>
       //.eslintrc.js
-      
+   
       "eslintConfig": {
        "extends": "react-app"
        }
